@@ -1,35 +1,88 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import styles from "./App.module.css";
+import NavBar from "./components/NavBar";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface Stock {
+  symbol: string;
+  name: string;
+  price: number;
 }
 
-export default App
+const App: React.FC = () => {
+  const [route, setRoute] = useState<string>("home");
+  const [stocks, setStocks] = useState<Stock[]>([]);
+  const [symbol, setSymbol] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [price, setPrice] = useState<number>(0);
+
+  function handleOnSubmit() {
+    console.log("SUBMIT");
+    setSymbol("");
+    setName("");
+    setPrice(0);
+    setStocks((prevStocks) => [
+      ...prevStocks,
+      {
+        symbol,
+        name,
+        price,
+      },
+    ]);
+  }
+
+  return (
+    <div className={styles.appContainer}>
+      <NavBar setRoute={setRoute} />
+      {/* Other components and content */}
+      <main className={styles.mainContent}>
+        <h1>Current Route: {route}</h1>
+        <hr />
+
+        <h2>Add Stock</h2>
+        <form action={handleOnSubmit}>
+          <label>
+            Symbol:
+            <input
+              type="text"
+              required
+              value={symbol}
+              onChange={(e) => setSymbol(e.target.value)}
+            />
+          </label>
+          <label>
+            Name:
+            <input
+              type="text"
+              required
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+            />
+          </label>
+          <label>
+            Price:
+            <input
+              type="number"
+              required
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
+            />
+          </label>
+          <button type="submit">Add Stock</button>
+        </form>
+
+        <h2>Stocks</h2>
+        <ul>
+          {stocks.map((stock) => (
+            <li key={stock.symbol}>
+              {stock.symbol} - {stock.name} - ${stock.price}
+            </li>
+          ))}
+        </ul>
+      </main>
+    </div>
+  );
+};
+
+export default App;
